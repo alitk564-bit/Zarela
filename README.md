@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zarela Crochet Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3E9D9;
+            color: #5D4037;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+        .animate-scaleIn { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        .product-card:hover .view-details-overlay { opacity: 1; }
+        .product-card img { transition: transform 0.5s ease; }
+        .product-card:hover img { transform: scale(1.05); }
+
+        .selection-primary::selection {
+            background-color: #5D4037;
+            color: white;
+        }
+    </style>
+</head>
+<body class="selection-primary">
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#5D4037] text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-500 z-[110] translate-y-20 opacity-0 pointer-events-none">
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+        <span class="font-bold">Added to your basket!</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white shadow-sm bg-opacity-95 backdrop-blur-sm border-b border-[#E8DCC8]">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-[#5D4037] shadow-sm flex items-center justify-center bg-[#5D4037]">
+                    <img src="Zarila Logo.jpg" alt="Zarela Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=\'text-white font-bold\'>Z</span>'">
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-[#5D4037]">Zarela</h1>
+                    <p class="text-[10px] text-[#8D6E63] font-bold tracking-widest uppercase hidden sm:block">Lebanon & Syria</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button onclick="toggleCart(true)" class="relative p-2.5 bg-[#F3E9D9] hover:bg-[#E8DCC8] rounded-full transition-all group">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-[#5D4037] group-hover:scale-110 transition-transform"></i>
+                    <span id="cart-count-badge" class="hidden absolute -top-1 -right-1 bg-[#5D4037] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white animate-bounce">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="max-w-6xl mx-auto px-4 py-12 md:py-20 text-center">
+        <div class="mb-8 flex justify-center">
+            <div class="relative p-1 bg-white rounded-full shadow-xl border-4 border-[#E8DCC8]">
+                <img src="Zarila Logo.jpg" alt="Logo" class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover">
+                <div class="absolute -bottom-2 -right-2 bg-[#5D4037] text-white p-2.5 rounded-full shadow-lg">
+                    <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="inline-block mb-4 px-4 py-1.5 rounded-full bg-[#EFE5D5] text-[#5D4037] text-sm font-semibold tracking-wide border border-[#DBCAB0] flex items-center gap-2 mx-auto w-fit">
+           <i data-lucide="truck" class="w-4 h-4"></i> Shipping to Lebanon & Syria
+        </div>
+        <h2 class="text-4xl md:text-6xl font-black text-[#5D4037] mb-6 tracking-tight leading-tight">
+            Handmade with <span class="text-[#8D6E63] italic">Love.</span>
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+            Unique crochet treasures handcrafted for our community in <b>Lebanon</b> and <b>Syria</b>. Each piece is made to order with premium yarn.
+        </p>
+        
+        <div class="flex justify-center gap-6 text-[#5D4037] mb-8">
+            <a href="https://instagram.com/zarela.crochet" target="_blank" class="hover:scale-125 transition-transform hover:text-[#E1306C]"><i data-lucide="instagram"></i></a>
+            <a href="https://www.facebook.com/share/14TkungHAQN/" target="_blank" class="hover:scale-125 transition-transform hover:text-[#1877F2]"><i data-lucide="facebook"></i></a>
+            <a href="https://tiktok.com/@zarela_crochet" target="_blank" class="hover:scale-125 transition-transform hover:text-black">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" /></svg>
+            </a>
+            <a href="https://wa.me/96171977454" target="_blank" class="hover:scale-125 transition-transform hover:text-[#25D366]"><i data-lucide="message-circle"></i></a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 pb-24">
+        <!-- Filters & Search -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-10 sticky top-[72px] z-30 py-4 bg-[#F3E9D9]/95 backdrop-blur-sm -mx-4 px-4 md:static md:bg-transparent md:p-0">
+            <div id="category-filters" class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 no-scrollbar">
+                <!-- Categories will be injected here -->
+            </div>
+            <div class="relative w-full md:w-64">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input id="search-input" type="text" placeholder="Search items..." class="w-full pl-10 pr-4 py-2.5 rounded-full border-none shadow-sm focus:ring-2 focus:ring-[#5D4037] bg-white text-sm outline-none">
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Products will be injected here -->
+        </div>
+    </main>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-0 md:p-6 lg:p-12 overflow-hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeModal()"></div>
+        <div id="modal-content" class="relative w-full max-w-5xl bg-white md:rounded-3xl h-full md:h-auto max-h-full overflow-y-auto flex flex-col md:flex-row shadow-2xl animate-scaleIn">
+            <!-- Modal details injected here -->
+        </div>
+    </div>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 z-[100] hidden justify-end">
+        <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="toggleCart(false)"></div>
+        <div class="relative w-full max-w-md bg-[#FAF6F1] h-full shadow-2xl flex flex-col animate-slideIn">
+            <div class="p-5 border-b border-[#E8DCC8] bg-white flex justify-between items-center">
+                <h2 class="text-xl font-black text-[#5D4037] flex items-center gap-2">
+                    <i data-lucide="shopping-bag" class="w-6 h-6"></i> Your Basket
+                </h2>
+                <button onclick="toggleCart(false)" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6 text-gray-400"></i>
+                </button>
+            </div>
+            
+            <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar">
+                <!-- Cart items injected here -->
+            </div>
+
+            <div id="cart-footer" class="p-6 bg-white border-t border-[#E8DCC8] hidden pb-10">
+                <div class="mb-4 p-4 bg-[#F3E9D9]/60 rounded-2xl text-xs text-[#5D4037] font-semibold flex gap-3 border border-[#E8DCC8]">
+                    <i data-lucide="truck" class="w-5 h-5 shrink-0 opacity-70"></i>
+                    <span>Ships to Lebanon & Syria. Delivery fees calculated at checkout.</span>
+                </div>
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <span class="text-gray-400 text-xs font-bold uppercase tracking-wider block mb-1">Total Amount</span>
+                        <span id="cart-total" class="text-3xl font-black text-[#5D4037]">$0</span>
+                    </div>
+                </div>
+                <button onclick="checkout()" class="w-full bg-[#25D366] hover:bg-[#1fb355] text-white py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl transition-all active:scale-95">
+                    <i data-lucide="send" class="w-5 h-5"></i> Checkout on WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#5D4037] text-[#E8DCC8] py-16 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="mb-6 flex justify-center">
+                <img src="Zarila Logo.jpg" alt="Logo" class="w-20 h-20 rounded-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+            </div>
+            <h2 class="text-3xl font-black text-white mb-4">Zarela Crochet</h2>
+            <p class="opacity-70 mb-4 max-w-sm mx-auto">Crafting unique, slow-fashion pieces that last a lifetime.</p>
+            <p class="text-sm font-bold mb-8 flex items-center justify-center gap-2">
+                <i data-lucide="truck" class="w-4 h-4"></i> Delivering across Lebanon & Syria
+            </p>
+            <div class="flex justify-center gap-8 mb-12">
+                <a href="https://instagram.com/zarela.crochet" target="_blank"><i data-lucide="instagram"></i></a>
+                <a href="https://tiktok.com/@zarela_crochet" target="_blank">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" /></svg>
+                </a>
+                <a href="https://wa.me/96171977454" target="_blank"><i data-lucide="message-circle"></i></a>
+            </div>
+            <p class="text-xs opacity-40 uppercase tracking-widest">Handcrafted with Pride</p>
+        </div>
+    </footer>
+
+    <script>
+        const PRODUCTS = [
+            { id: 1, name: "Sunflower Granny Square Bag", category: "Bags", price: 45, description: "This beautiful Sunflower Granny Square Bag is meticulously handcrafted using premium cotton yarn. The vibrant sunflower motifs are repeated on both sides, and the interior is fully lined with a matching fabric to ensure durability.", images: ["Zarila Logo.jpg", "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=800"] },
+            { id: 2, name: "Boho Market Tote", category: "Bags", price: 35, description: "Our Boho Market Tote is the ultimate eco-friendly accessory. The sturdy mesh stitch expands to fit your groceries, beach gear, or everyday essentials.", images: ["https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=800"] },
+            { id: 3, name: "Cozy Chunky Scarf", category: "Scarfs", price: 25, description: "Stay warm and stylish with this oversized chunky scarf. Hand-knitted with a luxury wool blend.", images: ["https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&q=80&w=800"] },
+            { id: 4, name: "Pastel Bucket Hat", category: "Clothes", price: 20, description: "The must-have accessory for sunny days. This pastel bucket hat is hand-crocheted for a comfortable, breathable fit.", images: ["https://images.unsplash.com/photo-1575389667468-154df24a5948?auto=format&fit=crop&q=80&w=800"] },
+            { id: 5, name: "Crop Top 'Daisy'", category: "Clothes", price: 30, description: "A delicate, vintage-inspired crop top featuring intricate lace-like crochet patterns. The back features adjustable corset-style ties.", images: ["photo_2026-02-05_16-30-48.jpg", "photo_2026-02-05_16-25-03.jpg"] },
+            { id: 6, name: "Phone Pouch", category: "Accessories", price: 15, description: "The perfect solution for when you want to carry just the essentials. This cushioned pouch protects your phone from scratches.", images: ["https://images.unsplash.com/photo-1605218457297-7c1568285741?auto=format&fit=crop&q=80&w=800"] }
+        ];
+
+        let cart = [];
+        let activeCategory = "All";
+        let searchQuery = "";
+        let activeImageIdx = 0;
+
+        function init() {
+            renderCategories();
+            renderProducts();
+            lucide.createIcons();
+            
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                renderProducts();
+            });
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('category-filters');
+            const cats = ["All", ...new Set(PRODUCTS.map(p => p.category))];
+            container.innerHTML = cats.map(cat => `
+                <button onclick="setCategory('${cat}')" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all shadow-sm ${activeCategory === cat ? 'bg-[#5D4037] text-white' : 'bg-white text-[#5D4037] hover:bg-[#EFE5D5]'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(cat) {
+            activeCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('product-grid');
+            const filtered = PRODUCTS.filter(p => 
+                (activeCategory === "All" || p.category === activeCategory) &&
+                p.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            container.innerHTML = filtered.map(p => `
+                <div class="product-card group bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-[#E8DCC8]/30">
+                    <div class="relative aspect-square overflow-hidden bg-gray-100 cursor-pointer" onclick="openModal(${p.id})">
+                        <img src="${p.images[0]}" alt="${p.name}" class="w-full h-full object-cover">
+                        <div class="view-details-overlay absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 transition-opacity">
+                            <div class="bg-white/90 px-4 py-2 rounded-full text-sm font-bold text-[#5D4037]">View Details</div>
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <div class="text-xs text-[#8D6E63] font-bold uppercase tracking-wider mb-1">${p.category}</div>
+                        <h3 class="font-bold text-lg text-[#5D4037] mb-2 cursor-pointer hover:underline" onclick="openModal(${p.id})">${p.name}</h3>
+                        <p class="text-sm text-gray-500 mb-4 line-clamp-2 flex-grow">${p.description}</p>
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                            <span class="text-xl font-black text-[#5D4037]">$${p.price}</span>
+                            <button onclick="addToCart(${p.id})" class="bg-[#5D4037] text-white p-3 rounded-full hover:bg-[#8D6E63] transition-all shadow-md active:scale-90">
+                                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function addToCart(id) {
+            const product = PRODUCTS.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({...product, quantity: 1});
+            }
+            updateCartUI();
+            showNotify();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            
+            const badge = document.getElementById('cart-count-badge');
+            badge.innerText = count;
+            badge.classList.toggle('hidden', count === 0);
+
+            const container = document.getElementById('cart-items');
+            const footer = document.getElementById('cart-footer');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-24 flex flex-col items-center justify-center opacity-60">
+                        <div class="w-20 h-20 bg-[#F3E9D9] rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="shopping-bag" class="w-10 h-10 text-[#DBCAB0]"></i>
+                        </div>
+                        <p class="text-lg font-bold text-[#5D4037] mb-2">Your basket is empty</p>
+                        <button onclick="toggleCart(false)" class="text-sm font-black text-[#8D6E63] underline underline-offset-4 hover:text-[#5D4037]">Start Shopping</button>
+                    </div>`;
+                footer.classList.add('hidden');
+            } else {
+                footer.classList.remove('hidden');
+                document.getElementById('cart-total').innerText = `$${total}`;
+                container.innerHTML = cart.map(item => `
+                    <div class="group relative flex gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#E8DCC8] hover:border-[#5D4037]/30 transition-all">
+                        <button onclick="removeFromCart(${item.id})" class="absolute -top-2 -right-2 bg-red-500 text-white p-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <i data-lucide="x" class="w-3 h-3"></i>
+                        </button>
+                        <img src="${item.images[0]}" class="w-20 h-20 object-cover rounded-xl shadow-inner bg-gray-50">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <h4 class="font-bold text-[#5D4037] line-clamp-1 pr-4">${item.name}</h4>
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="flex items-center gap-3 bg-[#F3E9D9] rounded-full px-2 py-1 border border-[#E8DCC8]">
+                                    <button onclick="changeQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center rounded-full bg-white font-black text-[#5D4037] shadow-sm">-</button>
+                                    <span class="text-sm font-black w-4 text-center">${item.quantity}</span>
+                                    <button onclick="changeQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center rounded-full bg-white font-black text-[#5D4037] shadow-sm">+</button>
+                                </div>
+                                <span class="font-black text-[#5D4037]">$${item.price * item.quantity}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) removeFromCart(id);
+                else updateCartUI();
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartUI();
+        }
+
+        function toggleCart(show) {
+            const el = document.getElementById('cart-drawer');
+            el.classList.toggle('hidden', !show);
+            el.classList.toggle('flex', show);
+            document.body.style.overflow = show ? 'hidden' : 'auto';
+        }
+
+        function openModal(id) {
+            const p = PRODUCTS.find(x => x.id === id);
+            activeImageIdx = 0;
+            const modal = document.getElementById('product-modal');
+            renderModalContent(p);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderModalContent(p) {
+            const container = document.getElementById('modal-content');
+            container.innerHTML = `
+                <div class="w-full md:w-1/2 bg-[#F9F9F9] relative group">
+                    <button onclick="closeModal()" class="absolute top-4 left-4 z-10 p-2 bg-white/80 backdrop-blur rounded-full text-[#5D4037] md:hidden">
+                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                    </button>
+                    <div class="aspect-[4/5] md:aspect-square relative overflow-hidden">
+                        <img src="${p.images[activeImageIdx]}" id="modal-main-img" class="w-full h-full object-cover transition-all duration-500">
+                        ${p.images.length > 1 ? `
+                            <button onclick="cycleImg(${p.id}, -1)" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/50 hover:bg-white rounded-full"><i data-lucide="chevron-left"></i></button>
+                            <button onclick="cycleImg(${p.id}, 1)" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/50 hover:bg-white rounded-full"><i data-lucide="chevron-right"></i></button>
+                        ` : ''}
+                    </div>
+                    <div class="flex gap-2 p-4 justify-center overflow-x-auto">
+                        ${p.images.map((img, idx) => `
+                            <button onclick="setModalImg(${p.id}, ${idx})" class="w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${activeImageIdx === idx ? 'border-[#5D4037] scale-105' : 'border-transparent opacity-60'}">
+                                <img src="${img}" class="w-full h-full object-cover">
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 p-6 md:p-12 flex flex-col">
+                    <div class="hidden md:flex justify-end mb-4">
+                        <button onclick="closeModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6 text-gray-400"></i></button>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-[#8D6E63] font-bold uppercase tracking-widest text-xs">${p.category}</span>
+                        <h2 class="text-3xl font-black text-[#5D4037] mt-1">${p.name}</h2>
+                    </div>
+                    <div class="text-3xl font-black text-[#5D4037] my-6">$${p.price}</div>
+                    <div class="space-y-4 mb-10 flex-grow">
+                        <h4 class="font-bold text-[#5D4037] uppercase text-xs tracking-widest">Description</h4>
+                        <p class="text-gray-600 leading-relaxed">${p.description}</p>
+                        <div class="bg-[#F3E9D9]/50 p-4 rounded-xl text-sm text-[#5D4037] space-y-2 border border-[#E8DCC8]">
+                           <p class="italic font-medium">🧶 Custom colors and sizes available.</p>
+                           <p class="flex items-center gap-2 font-bold"><i data-lucide="truck" class="w-4 h-4"></i> Delivering to Lebanon & Syria</p>
+                        </div>
+                    </div>
+                    <div class="mt-auto space-y-3">
+                        <button onclick="addToCart(${p.id}); closeModal();" class="w-full bg-[#5D4037] hover:bg-[#4E342E] text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-lg active:scale-95">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function cycleImg(pid, delta) {
+            const p = PRODUCTS.find(x => x.id === pid);
+            activeImageIdx = (activeImageIdx + delta + p.images.length) % p.images.length;
+            renderModalContent(p);
+        }
+
+        function setModalImg(pid, idx) {
+            const p = PRODUCTS.find(x => x.id === pid);
+            activeImageIdx = idx;
+            renderModalContent(p);
+        }
+
+        function closeModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function showNotify() {
+            const el = document.getElementById('notification');
+            el.style.transform = 'translate(-50%, 0)';
+            el.style.opacity = '1';
+            setTimeout(() => {
+                el.style.transform = 'translate(-50%, 20px)';
+                el.style.opacity = '0';
+            }, 2000);
+        }
+
+        function checkout() {
+            const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            const lineItems = cart.map(i => `• ${i.quantity}x ${i.name} ($${i.price * i.quantity})`).join("%0A");
+            const message = `Hello Zarela! 🧶%0A%0AI would like to order:%0A${lineItems}%0A%0A*Total: $${total}*%0A%0ADelivery Location: [Please write Lebanon or Syria]%0A%0APlease let me know the details!`;
+            window.open(`https://wa.me/96171977454?text=${message}`, '_blank');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
